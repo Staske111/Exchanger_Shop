@@ -1,7 +1,11 @@
-﻿using Exchanger_Shop.Models;
+﻿using Exchanger_Shop.Methods;
+using Exchanger_Shop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Exchanger_Shop.Controllers
 {
@@ -20,6 +24,16 @@ namespace Exchanger_Shop.Controllers
         {
             User CurrUser = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
             return Ok(CurrUser);
+        }
+        public async Task<IActionResult> getWallet()
+        {
+            NameValueCollection nvc = new NameValueCollection();
+            nvc.Add("currency", "BTC");
+            nvc.Add("uid", "3120983");//user_id
+            nvc.Add("ts", DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
+            ZixiPayApi zixiPayApi = new ZixiPayApi();
+            PayClass pc = await zixiPayApi.CallMethod("getwallet", nvc, "sdklsdhfiebehnf");//api key
+            return Ok(new { adress = pc.payload.First().address });
         }
     }
 }
